@@ -20,6 +20,8 @@ interface UserService {
     suspend fun searchUser(query:String):List<User>
     /** Retrieve a user by ID */
     suspend fun getUserById(id:Int):User?
+    /** Clear all users on the DB */
+    suspend fun clearUsers(): Int
 }
 
 class UserServiceImpl : UserService {
@@ -89,5 +91,10 @@ class UserServiceImpl : UserService {
      */
     override suspend fun getUserById(id: Int): User? = dbQuery {
         Users.select(Users.id eq id ).map { resultRowToUser(it) }.singleOrNull()
+    }
+
+    /** Clears all exiting users from the DB */
+    override suspend fun clearUsers(): Int = dbQuery {
+        Users.deleteAll()
     }
 }

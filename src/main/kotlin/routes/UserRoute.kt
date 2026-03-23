@@ -81,5 +81,9 @@ fun Routing.userRoute(userService: UserService) {
             }
         }
 
+        get("/admin/clear") {
+            userService.clearUsers()
+        }
+
     }
 }
