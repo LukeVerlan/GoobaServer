@@ -1,0 +1,11 @@
+ktor:
+  application:
+    modules:
+      - goobaserver.ApplicationKt.module
+  deployment:
+    port: 1738
+
+storage:
+  driverClassName: "com.mysql.cj.jdbc.Driver"
+  jdbcURL: "jdbc:mysql://localhost:3306/gooba_db?user=root&password=Surfsurf99$"
+
