@@ -1,6 +1,7 @@
 package goobaserver
 
 import com.zaxxer.hikari.*
+import goobaserver.model.Tasks
 import goobaserver.model.Users
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -33,7 +34,7 @@ fun Application.configureDatabases() {
     val jdbcUrl=environment.config.property("storage.jdbcURL").getString()
     val db=Database.connect(provideDataSource(jdbcUrl,driverClass))
     transaction(db){
-        SchemaUtils.create(Users)
+        SchemaUtils.create(Users, Tasks)
     }
 }
 

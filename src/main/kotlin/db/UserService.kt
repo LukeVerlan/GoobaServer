@@ -73,7 +73,7 @@ class UserServiceImpl : UserService {
      * @return True if number of users removed is greater than 0
      */
     override suspend fun deleteUser(user: User): Boolean = dbQuery {
-        Users.deleteWhere { name eq user.name } >0
+        Users.deleteWhere { Users.name eq user.name } >0
     }
 
     /** Find a user on the database of given name, ignores case
