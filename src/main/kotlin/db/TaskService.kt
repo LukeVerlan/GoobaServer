@@ -65,7 +65,7 @@ class TaskServiceImpl : TaskService {
     }
 
     /** Updates a task on the DB
-     * @param type Primary id for the task
+     * @param task Primary id for the task
      * @return True if update was successful, false if failed
      */
     override suspend fun updateTask(task: Task): Boolean = dbQuery {
@@ -96,6 +96,8 @@ class TaskServiceImpl : TaskService {
      * @return The task, null if fails
      */
     override suspend fun getTask(type: String): Task? = dbQuery {
-        Tasks.select(Tasks.type eq type).map { resultRowToTask(it) }.singleOrNull()
+        Tasks.selectAll().where { Tasks.type.upperCase() like "%${type.uppercase()}%" }
+            .map { resultRowToTask(it) }.firstOrNull()
     }
+
 }

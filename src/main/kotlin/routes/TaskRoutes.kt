@@ -70,7 +70,6 @@ fun Routing.taskRoutes(taskService: TaskService) {
             } else {
                 call.respond(HttpStatusCode.BadRequest, message="Task not found")
             }
-
         }
     }
 }
