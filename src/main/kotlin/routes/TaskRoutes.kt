@@ -31,9 +31,16 @@ fun Routing.taskRoutes(taskService: TaskService) {
             }
         }
 
-        delete {
-            val task = call.receive<Task>()
-            val result = taskService.deleteTask(task.type)
+        delete("/{date}/{name}") {
+            val type = call.parameters["type"]
+            val date = call.parameters["date"]
+
+            if(type.isNullOrBlank() || date.isNullOrBlank()){
+                call.respond(HttpStatusCode.BadRequest, message="Invalid parameter: $type")
+                return@delete
+            }
+
+            val result = taskService.deleteTask(type, date)
             if(result) {
                 call.respond(HttpStatusCode.OK, message="Deleted task")
             } else {

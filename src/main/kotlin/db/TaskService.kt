@@ -14,7 +14,7 @@ interface TaskService {
     suspend fun addTask(task: Task):Task?
 
     // Delete task from DB
-    suspend fun deleteTask(type : String):Boolean
+    suspend fun deleteTask(type : String, date : String):Boolean
 
     // Update a task in the DB
     suspend fun updateTask(task: Task):Boolean
@@ -63,8 +63,9 @@ class TaskServiceImpl : TaskService {
      * @param Task Task with Primary id for the desired task
      * @return True if deleted, false if failed
      */
-    override suspend fun deleteTask(type : String): Boolean = dbQuery {
-        Tasks.deleteWhere { Tasks.type.upperCase() eq type.uppercase() } > 0
+    override suspend fun deleteTask(type : String, date :String): Boolean = dbQuery {
+        Tasks.deleteWhere { (Tasks.type.upperCase() eq "%${type.uppercase()}%") and
+                            (Tasks.date.upperCase() eq "%${date.uppercase()}%")} > 0
     }
 
     /** Updates a task on the DB
