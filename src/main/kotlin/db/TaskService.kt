@@ -64,8 +64,8 @@ class TaskServiceImpl : TaskService {
      * @return True if deleted, false if failed
      */
     override suspend fun deleteTask(type : String, date :String): Boolean = dbQuery {
-        Tasks.deleteWhere { (Tasks.type.upperCase() eq "%${type.uppercase()}%") and
-                            (Tasks.date.upperCase() eq "%${date.uppercase()}%")} > 0
+        Tasks.deleteWhere { (Tasks.type.upperCase() like "%${type.uppercase()}%") and
+                            (Tasks.date.upperCase() like "%${date.uppercase()}%")} > 0
     }
 
     /** Updates a task on the DB
@@ -73,8 +73,8 @@ class TaskServiceImpl : TaskService {
      * @return True if update was successful, false if failed
      */
     override suspend fun updateTask(task: Task): Boolean = dbQuery {
-        Tasks.update({  (Tasks.type.upperCase() eq "%${task.type.uppercase()}%") and
-                                (Tasks.date.upperCase() eq "%${task.date.uppercase()}%") }) {
+        Tasks.update({  (Tasks.type.upperCase() like "%${task.type.uppercase()}%") and
+                                (Tasks.date.upperCase() like "%${task.date.uppercase()}%") }) {
             it[userID]=task.userID
             it[time]=task.time
         } > 0
@@ -110,8 +110,12 @@ class TaskServiceImpl : TaskService {
      * @return Task that matches both query's
       */
     override suspend fun getTaskNameAndDate(type: String, date: String): Task? = dbQuery {
-        Tasks.selectAll().where { (Tasks.type.upperCase() eq "%${type.uppercase()}%") and (Tasks.date.upperCase() like "%${date.uppercase()}%") }
-            .map { resultRowToTask(it) }.firstOrNull()
+        Tasks.selectAll().where {
+            (Tasks.type.lowerCase() like "%${type.lowercase()}%") and
+                    (Tasks.date.lowerCase() like "%${date.lowercase()}%")
+        }
+            .map { resultRowToTask(it) }
+            .firstOrNull()
     }
 
     /** Returns a list of tasks that match the given date
@@ -119,7 +123,7 @@ class TaskServiceImpl : TaskService {
      * @return List of tasks
      */
     override suspend fun getTaskDate(date: String) = dbQuery {
-        Tasks.selectAll().where { (Tasks.date.upperCase() eq "%${date.uppercase()}%") }
+        Tasks.selectAll().where { (Tasks.date.upperCase() like "%${date.uppercase()}%") }
             .map { resultRowToTask(it) }
     }
 

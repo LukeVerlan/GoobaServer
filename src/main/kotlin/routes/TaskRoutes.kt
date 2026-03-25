@@ -31,7 +31,7 @@ fun Routing.taskRoutes(taskService: TaskService) {
             }
         }
 
-        delete("/{date}/{name}") {
+        delete("/{date}/{type}") {
             val type = call.parameters["type"]
             val date = call.parameters["date"]
 
