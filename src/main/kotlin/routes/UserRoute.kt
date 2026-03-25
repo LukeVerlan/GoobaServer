@@ -55,24 +55,30 @@ fun Routing.userRoute(userService: UserService) {
             if (result){
                 call.respond(HttpStatusCode.OK,"Delete successful")
             }else{
-                call.respond(HttpStatusCode.NotImplemented,"Delete not done")
+                call.respond(HttpStatusCode.NotFound,"Delete not done")
             }
         }
 
-        get("search/id/{id}") {
-            val id = call.parameters["id"]?.toInt()
+        get("/search/id/{id}") {
+            try {
+                val id = call.parameters["id"]?.toInt()
 
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest, "ID required")
-                return@get
-            }
+                if (id == null) {
+                    call.respond(HttpStatusCode.BadRequest, "Invalid ID format")
+                    return@get
+                }
 
-            val result = userService.getUserById(id)
+                val result = userService.getUserById(id)
 
-            if (result != null){
-                call.respond(HttpStatusCode.OK,result)
-            }else{
-                call.respond(HttpStatusCode.NotImplemented,"User not found")
+                if (result != null) {
+                    call.respond(HttpStatusCode.OK, result)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "User not found")
+                }
+            } catch (e: Exception) {
+                // This will print the actual error to your console
+                application.log.error("Failed to fetch user", e)
+                call.respond(HttpStatusCode.InternalServerError, "Internal Server Error: ${e.message}")
             }
         }
 

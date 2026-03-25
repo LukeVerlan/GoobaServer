@@ -90,7 +90,8 @@ class UserServiceImpl : UserService {
      *  @return User with id that matches the searched id
      */
     override suspend fun getUserById(id: Int): User? = dbQuery {
-        Users.select(Users.id eq id ).map { resultRowToUser(it) }.singleOrNull()
+        Users.selectAll().where { Users.id eq id }
+            .map { resultRowToUser(it) }.singleOrNull()
     }
 
     /** Clears all exiting users from the DB */
