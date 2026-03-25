@@ -14,12 +14,10 @@ data class Task (
 
 object Tasks : Table() {
     val userID = reference("userID", Users.id)
-
     val date = varchar("date", length = 255)
     val time = varchar("time", length = 255)
-
     // Task type
     val type = varchar("type", 50)
 
-    override val primaryKey = PrimaryKey( type)
+    override val primaryKey = PrimaryKey( date, type)
 }

@@ -26,7 +26,10 @@ interface TaskService {
     suspend fun clearTasks():Int
 
     // Search for task by type
-    suspend fun getTask(type: String):Task?
+    suspend fun getTaskNameAndDate(type: String, date: String):Task?
+
+    suspend fun getTaskName(type: String) : List<Task>
+    suspend fun getTaskDate(date: String): List<Task>
 
 }
 
@@ -95,9 +98,28 @@ class TaskServiceImpl : TaskService {
      * @param type Primary ID of the task
      * @return The task, null if fails
      */
-    override suspend fun getTask(type: String): Task? = dbQuery {
+    override suspend fun getTaskName(type: String): List<Task> = dbQuery {
         Tasks.selectAll().where { Tasks.type.upperCase() like "%${type.uppercase()}%" }
+            .map { resultRowToTask(it) }
+    }
+
+    /** Retrieves a Task from the database by date and time
+     * @param type Task Type
+     * @param date Task Date
+     * @return Task that matches both query's
+      */
+    override suspend fun getTaskNameAndDate(type: String, date: String): Task? = dbQuery {
+        Tasks.selectAll().where { (Tasks.type.upperCase() eq "%${type.uppercase()}%") and (Tasks.date.upperCase() like "%${date.uppercase()}%") }
             .map { resultRowToTask(it) }.firstOrNull()
+    }
+
+    /** Returns a list of tasks that match the given date
+     * @param date Date of tasks
+     * @return List of tasks
+     */
+    override suspend fun getTaskDate(date: String) = dbQuery {
+        Tasks.selectAll().where { (Tasks.date.upperCase() eq "%${date.uppercase()}%") }
+            .map { resultRowToTask(it) }
     }
 
 }

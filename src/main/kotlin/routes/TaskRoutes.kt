@@ -56,7 +56,7 @@ fun Routing.taskRoutes(taskService: TaskService) {
             call.respond(HttpStatusCode.OK, message = "Tasks cleared")
         }
 
-        get("/search/{type}") {
+        get("/search/type/{type}") {
             val type = call.parameters["type"]
 
             if (type.isNullOrEmpty()) {
@@ -64,8 +64,33 @@ fun Routing.taskRoutes(taskService: TaskService) {
                 return@get
             }
 
-            val task = taskService.getTask(type)
-            if(task != null) {
+            val tasks = taskService.getTaskName(type)
+            call.respond(HttpStatusCode.OK, tasks)
+        }
+
+        get("/search/date/{date}"){
+            val date = call.parameters["date"]
+
+            if (date.isNullOrEmpty()) {
+                call.respond(HttpStatusCode.BadRequest, message="Date parameter is required")
+                return@get
+            }
+
+            val tasks = taskService.getTaskDate(date)
+            call.respond(HttpStatusCode.OK, tasks)
+        }
+
+        get("/search/{date}/{type}") {
+            val date = call.parameters["date"]
+            val type = call.parameters["type"]
+
+            if (type.isNullOrEmpty() || date.isNullOrEmpty()) {
+                call.respond(HttpStatusCode.BadRequest, message="Type and Date parameter is required")
+                return@get
+            }
+
+            val task = taskService.getTaskNameAndDate(type, date)
+            if (task != null) {
                 call.respond(HttpStatusCode.OK, task)
             } else {
                 call.respond(HttpStatusCode.BadRequest, message="Task not found")
