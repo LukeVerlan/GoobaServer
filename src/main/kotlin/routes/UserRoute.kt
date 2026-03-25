@@ -42,30 +42,41 @@ fun Routing.userRoute(userService: UserService) {
             }
         }
 
-        delete{
-            val user=call.receive<User>()
-            val result=userService.deleteUser(user)
+        delete("/{id}"){
+            val id = call.parameters["id"]?.toInt()
+
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "ID required")
+                return@delete
+            }
+
+            val result=userService.deleteUser(id)
+
             if (result){
                 call.respond(HttpStatusCode.OK,"Delete successful")
             }else{
                 call.respond(HttpStatusCode.NotImplemented,"Delete not done")
             }
         }
-        get("/search"){
-            val query=call.request.queryParameters["q"].toString()
-            val users=userService.searchUser(query)
-            call.respond(HttpStatusCode.OK,users)
-        }
-        get("/{id}") {
-            val id=call.parameters["id"]?.toInt()
-            id?.let {
-                userService.getUserById(it)?.let {user->
-                    call.respond(HttpStatusCode.OK,user)
-                } ?: call.respond(HttpStatusCode.NotFound,"User not found")
-            } ?: call.respond(HttpStatusCode.BadGateway,"Provide Input!!")
+
+        get("search/id/{id}") {
+            val id = call.parameters["id"]?.toInt()
+
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "ID required")
+                return@get
+            }
+
+            val result = userService.getUserById(id)
+
+            if (result != null){
+                call.respond(HttpStatusCode.OK,result)
+            }else{
+                call.respond(HttpStatusCode.NotImplemented,"User not found")
+            }
         }
 
-        get("/search/{name}") {
+        get("/search/name/{name}") {
             val name=call.parameters["name"] // Get the name from the search
 
             if (name.isNullOrBlank()){ // Check if the name is viable, if not exit early
@@ -81,7 +92,7 @@ fun Routing.userRoute(userService: UserService) {
             }
         }
 
-        get("/admin/clear") {
+        get("/clear") {
             userService.clearUsers()
         }
 

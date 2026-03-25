@@ -11,7 +11,7 @@ interface UserService {
     /** Add a user to the DB */
     suspend fun addUser(user: User):User?
     /** Delete a user from the DB */
-    suspend fun deleteUser(user: User):Boolean
+    suspend fun deleteUser(id: Int):Boolean
     /** Update a user entry on the DB */
     suspend fun updateUser(user: User):Boolean
     /** Retrieve a user from the DB */
@@ -72,8 +72,8 @@ class UserServiceImpl : UserService {
      * @param User
      * @return True if number of users removed is greater than 0
      */
-    override suspend fun deleteUser(user: User): Boolean = dbQuery {
-        Users.deleteWhere { Users.name eq user.name } >0
+    override suspend fun deleteUser(id: Int): Boolean = dbQuery {
+        Users.deleteWhere { Users.id eq id} >0
     }
 
     /** Find a user on the database of given name, ignores case
