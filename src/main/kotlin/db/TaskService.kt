@@ -28,8 +28,14 @@ interface TaskService {
     // Search for task by type
     suspend fun getTaskNameAndDate(type: String, date: String):Task?
 
+    // Get a list of tasks by name
     suspend fun getTaskName(type: String) : List<Task>
+
+    // Get a list of tasks by date
     suspend fun getTaskDate(date: String): List<Task>
+
+    // Get a list of tasks for a month
+    suspend fun getMonthOfTasks(year: String, month:String): List<Task>
 
 }
 
@@ -124,6 +130,16 @@ class TaskServiceImpl : TaskService {
      */
     override suspend fun getTaskDate(date: String) = dbQuery {
         Tasks.selectAll().where { (Tasks.date.upperCase() like "%${date.uppercase()}%") }
+            .map { resultRowToTask(it) }
+    }
+
+    /** Returns a month of tasks from the given year and month
+     * @param year Year of the tasks as a number
+     * @param month Month of the tasks as a number
+     * @return List of tasks that fit that criteria
+     */
+    override suspend fun getMonthOfTasks(year: String, month: String) = dbQuery {
+        Tasks.selectAll().where { Tasks.date.upperCase() like "${year}-%${month}-%" }
             .map { resultRowToTask(it) }
     }
 

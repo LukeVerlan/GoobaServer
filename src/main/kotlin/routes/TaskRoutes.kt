@@ -103,5 +103,24 @@ fun Routing.taskRoutes(taskService: TaskService) {
                 call.respond(HttpStatusCode.BadRequest, message="Task not found")
             }
         }
+
+        get("/search/{year}/{month}") {
+            val year = call.parameters["year"]
+            val month = call.parameters["month"]
+
+            if(year.isNullOrEmpty() || month.isNullOrEmpty()){
+                call.respond(HttpStatusCode.BadRequest, message="Year and Month parameter is required")
+                return@get
+            }
+
+            if(year.length != 4 || month.length != 2){
+                call.respond(HttpStatusCode.BadRequest, message="Year and Month must be of proper length")
+                return@get
+            }
+
+            val tasks = taskService.getMonthOfTasks(year, month)
+            call.respond(HttpStatusCode.OK, tasks)
+
+        }
     }
 }

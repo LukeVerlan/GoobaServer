@@ -4,6 +4,7 @@ ktor:
       - goobaserver.ApplicationKt.module
   deployment:
     port: 1738
+    host: 0.0.0.0
 
 storage:
   driverClassName: "com.mysql.cj.jdbc.Driver"
